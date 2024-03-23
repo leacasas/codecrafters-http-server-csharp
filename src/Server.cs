@@ -22,12 +22,29 @@ int bytesRead = networkStream.Read(bytes, 0, bytes.Length);// Receive all the da
 data = Encoding.ASCII.GetString(bytes.AsSpan(0, bytesRead));// Translate data bytes to a ASCII string
 
 // process
-var lines = data.Split(" ", StringSplitOptions.RemoveEmptyEntries);
-var startLine = lines[1];
+
+var msgSegments = data.Split("\r\n");
+
+var startLine = msgSegments[0];
+
+var startLineSegments = startLine.Split(' ');
+
+var path = startLineSegments[1];
 
 var responseBuilder = new StringBuilder("HTTP/1.1 ");
-if (startLine == "/")
+
+if (path == "/")
     responseBuilder.Append("200 OK\r\n\r\n");
+else if (path.StartsWith("/echo/"))
+{
+    var uriSegments = path.Split('/', StringSplitOptions.RemoveEmptyEntries);
+    var valueToEcho = uriSegments.Length > 1 ? uriSegments[1] : "";
+    responseBuilder.Append("200 OK\r\n\r\n");
+    responseBuilder.Append("Content-Type: text/plain\r\n\r\n");//Content type
+    responseBuilder.Append($"Content-Length: {valueToEcho.Length}\r\n\r\n");//Content length
+    responseBuilder.Append("\r\n\r\n");//new line
+    responseBuilder.Append($"{valueToEcho}\r\n\r\n");//content
+}
 else
     responseBuilder.Append("404 Not Found\r\n\r\n");
 
