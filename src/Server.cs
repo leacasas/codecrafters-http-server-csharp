@@ -10,6 +10,6 @@ var server = new TcpListener(IPAddress.Any, 4221);
 server.Start();
 
 var client = server.AcceptTcpClient(); // return a reference to the tcpclient to send and receive
-var outputBytes = Encoding.UTF8.GetBytes($"HTTP/1.1 200 OK\r\n\r\n"); // dencode the string in UTF8
+var outputBytes = Encoding.UTF8.GetBytes($"HTTP/1.1 200 OK\r\n\r\n"); // dencode the string in UT F8
 
 client.GetStream().Write(outputBytes); // get the network stream and write bytes to it
