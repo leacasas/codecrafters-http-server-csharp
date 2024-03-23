@@ -34,7 +34,7 @@ var path = startLineSegments[1];
 var responseBuilder = new StringBuilder("HTTP/1.1 ");
 
 if (path == "/")
-    responseBuilder.Append("200 OK\r\n");
+    responseBuilder.Append("200 OK\r\n\r\n");
 else if (path.StartsWith("/echo/"))
 {
     var uriSegments = path.Split('/', StringSplitOptions.RemoveEmptyEntries);
@@ -46,7 +46,7 @@ else if (path.StartsWith("/echo/"))
     responseBuilder.Append($"{valueToEcho}");//content
 }
 else
-    responseBuilder.Append("404 Not Found\r\n");
+    responseBuilder.Append("404 Not Found\r\n\r\n");
 
 byte[] msg = Encoding.UTF8.GetBytes(responseBuilder.ToString());
 
