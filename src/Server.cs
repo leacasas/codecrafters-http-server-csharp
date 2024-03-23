@@ -37,8 +37,7 @@ if (path == "/")
     responseBuilder.Append("200 OK\r\n\r\n");
 else if (path.StartsWith("/echo/"))
 {
-    var uriSegments = path.Split('/', StringSplitOptions.RemoveEmptyEntries);
-    var valueToEcho = uriSegments.Length > 1 ? uriSegments[1] : "";
+    var valueToEcho = path.Remove(0, 6); // "/echo/" is 6 chars
     responseBuilder.Append("200 OK\r\n");
     responseBuilder.Append("Content-Type: text/plain\r\n");//Content type
     responseBuilder.Append($"Content-Length: {valueToEcho.Length}\r\n");//Content length
