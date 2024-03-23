@@ -19,7 +19,7 @@ var networkStream = client.GetStream(); //get the network stream
 
 int bytesRead = networkStream.Read(bytes, 0, bytes.Length);// Receive all the data sent by the client.
 
-data = Encoding.ASCII.GetString(bytes.AsSpan(0, bytesRead));// Translate data bytes to a ASCII string
+data = Encoding.UTF8.GetString(bytes.AsSpan(0, bytesRead));// Translate data bytes to a ASCII string
 
 // process
 
@@ -48,7 +48,7 @@ else if (path.StartsWith("/echo/"))
 else
     responseBuilder.Append("404 Not Found\r\n");
 
-byte[] msg = Encoding.ASCII.GetBytes(responseBuilder.ToString());
+byte[] msg = Encoding.UTF8.GetBytes(responseBuilder.ToString());
 
 networkStream.Write(msg);// Write buffer into the network stream
 
