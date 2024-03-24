@@ -21,7 +21,7 @@ static async Task ProcessTCPConnection(TcpClient client)
     string data;
     var networkStream = client.GetStream(); //get the network stream
 
-    int bytesRead = await networkStream.ReadAsync(bytes);// Receive all the data sent by the client.
+    int bytesRead = networkStream.Read(bytes);// Receive all the data sent by the client.
 
     data = Encoding.UTF8.GetString(bytes.AsSpan(0, bytesRead));// Translate data bytes to a ASCII string
 
@@ -60,6 +60,7 @@ static async Task ProcessTCPConnection(TcpClient client)
     byte[] msg = Encoding.UTF8.GetBytes(responseBuilder.ToString());
 
     await networkStream.WriteAsync(msg);// Write buffer into the network stream
-    networkStream.Close();
+
+    networkStream.Close(); // close stream
     client.Close();// dispose tcp client and request tcp connection to close
 }
