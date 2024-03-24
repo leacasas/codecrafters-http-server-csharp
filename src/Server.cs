@@ -61,4 +61,4 @@ byte[] msg = Encoding.UTF8.GetBytes(responseBuilder.ToString());
 
 networkStream.Write(msg);// Write buffer into the network stream
 
-client.Close();// dispose tcp client and request tcp connection to close.
+client.Close();// dispose tcp client and request tcp connection to close
