@@ -17,13 +17,13 @@ try
     {
         Console.WriteLine("Waiting for a connection... ");
 
-        var client = server.AcceptTcpClient(); // blocking call to return a reference to the tcpclient to send and receive
+        var client = await server.AcceptTcpClientAsync(); // blocking call to return a reference to the tcpclient to send and receive
 
         Console.WriteLine("Connected!");
 
         var networkStream = client.GetStream(); //get the network stream
 
-        int bytesRead = networkStream.Read(bytes, 0, bytes.Length);// Receive all the data sent by the client.
+        int bytesRead = await networkStream.ReadAsync(bytes);// Receive all the data sent by the client.
 
         data = Encoding.UTF8.GetString(bytes.AsSpan(0, bytesRead));// Translate data bytes to a ASCII string
 
@@ -65,7 +65,7 @@ try
 
         byte[] msg = Encoding.UTF8.GetBytes(responseBuilder.ToString());
 
-        networkStream.Write(msg);// Write buffer into the network stream
+        await networkStream.WriteAsync(msg);// Write buffer into the network stream
 
         client.Close();// dispose tcp client and request tcp connection to close
     }
