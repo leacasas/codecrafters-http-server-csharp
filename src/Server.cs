@@ -26,6 +26,7 @@ data = Encoding.UTF8.GetString(bytes.AsSpan(0, bytesRead));// Translate data byt
 var msgSegments = data.Split("\r\n");
 
 var startLine = msgSegments[0];
+var headers = msgSegments[1];
 
 var startLineSegments = startLine.Split(' ');
 
@@ -35,6 +36,16 @@ var responseBuilder = new StringBuilder("HTTP/1.1 ");
 
 if (path == "/")
     responseBuilder.Append("200 OK\r\n\r\n");
+else if (path.StartsWith("/user-agent"))
+{
+    var header = headers.Split("\r\n").First(x => x.StartsWith("User-Agent"));
+    var responseValue = header.Split(':')[1];
+    responseBuilder.Append("200 OK\r\n");
+    responseBuilder.Append("Content-Type: text/plain\r\n");//Content type
+    responseBuilder.Append($"Content-Length: {responseValue.Length}\r\n");//Content length
+    responseBuilder.Append("\r\n");//new line
+    responseBuilder.Append($"{responseValue}");//content
+}
 else if (path.StartsWith("/echo/"))
 {
     var valueToEcho = path.Remove(0, 6); // "/echo/" is 6 chars
