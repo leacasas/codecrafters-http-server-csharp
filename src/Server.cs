@@ -27,11 +27,8 @@ static async Task ProcessTCPConnection(TcpClient client)
 
     // process
     var msgSegments = data.Split("\r\n", StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
-
     var startLine = msgSegments[0];
-
     var startLineSegments = startLine.Split(' ');
-
     var path = startLineSegments[1];
 
     var responseBuilder = new StringBuilder("HTTP/1.1 ");
@@ -63,7 +60,6 @@ static async Task ProcessTCPConnection(TcpClient client)
     byte[] msg = Encoding.UTF8.GetBytes(responseBuilder.ToString());
 
     await networkStream.WriteAsync(msg);// Write buffer into the network stream
-
+    networkStream.Close();
     client.Close();// dispose tcp client and request tcp connection to close
-    Console.WriteLine("Reponse sent!");
 }
