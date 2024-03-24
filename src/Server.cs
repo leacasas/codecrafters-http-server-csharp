@@ -67,7 +67,7 @@ try
 
         await networkStream.WriteAsync(msg);// Write buffer into the network stream
 
-        client.Close();// dispose tcp client and request tcp connection to close
+        //client.Close();// dispose tcp client and request tcp connection to close
     }
 }
 catch (Exception ex)
