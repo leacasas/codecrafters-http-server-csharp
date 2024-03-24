@@ -23,10 +23,9 @@ data = Encoding.UTF8.GetString(bytes.AsSpan(0, bytesRead));// Translate data byt
 
 // process
 
-var msgSegments = data.Split("\r\n");
+var msgSegments = data.Split("\r\n", StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
 
 var startLine = msgSegments[0];
-var headers = msgSegments[1];
 
 var startLineSegments = startLine.Split(' ');
 
@@ -38,8 +37,8 @@ if (path == "/")
     responseBuilder.Append("200 OK\r\n\r\n");
 else if (path.StartsWith("/user-agent"))
 {
-    var header = headers.Split("\r\n").First(x => x.StartsWith("User-Agent"));
-    var responseValue = header.Split(':')[1];
+    var header = msgSegments.First(x => x.StartsWith("User-Agent"));
+    var responseValue = header.Split(':', StringSplitOptions.TrimEntries)[1];
     responseBuilder.Append("200 OK\r\n");
     responseBuilder.Append("Content-Type: text/plain\r\n");//Content type
     responseBuilder.Append($"Content-Length: {responseValue.Length}\r\n");//Content length
