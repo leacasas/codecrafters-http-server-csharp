@@ -14,7 +14,9 @@ try
     // listening loop, deals with multiple connections.
     while (true)
     {
-        var tcpProcessing = Task.Run(() => ProcessTCPConnection(server, bytes));
+        var client = await server.AcceptTcpClientAsync(); // blocking call to return a reference to the tcpclient to send and receive
+
+        await Task.Run(() => ProcessTCPConnection(bytes, client));
     }
 }
 catch (Exception ex)
@@ -30,12 +32,9 @@ finally
 
 }
 
-static async Task<string> ProcessTCPConnection(TcpListener? server, byte[] bytes)
+static async Task ProcessTCPConnection(byte[] bytes, TcpClient client)
 {
     string data;
-
-    var client = await server.AcceptTcpClientAsync(); // blocking call to return a reference to the tcpclient to send and receive
-
     var networkStream = client.GetStream(); //get the network stream
 
     int bytesRead = await networkStream.ReadAsync(bytes);// Receive all the data sent by the client.
@@ -43,7 +42,6 @@ static async Task<string> ProcessTCPConnection(TcpListener? server, byte[] bytes
     data = Encoding.UTF8.GetString(bytes.AsSpan(0, bytesRead));// Translate data bytes to a ASCII string
 
     // process
-
     var msgSegments = data.Split("\r\n", StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
 
     var startLine = msgSegments[0];
@@ -83,5 +81,4 @@ static async Task<string> ProcessTCPConnection(TcpListener? server, byte[] bytes
     await networkStream.WriteAsync(msg);// Write buffer into the network stream
 
     client.Close();// dispose tcp client and request tcp connection to close
-    return data;
 }
