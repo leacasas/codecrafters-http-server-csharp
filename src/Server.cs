@@ -4,30 +4,15 @@ using System.Text;
 
 TcpListener? server = null;
 
-try
+server = new TcpListener(IPAddress.Any, 4221);
+server.Start(); //listen for client requests
+
+// listening loop, deals with multiple connections.
+while (true)
 {
-    server = new TcpListener(IPAddress.Any, 4221);
-    server.Start(); //listen for client requests
+    var client = await server.AcceptTcpClientAsync(); // blocking call to return a reference to the tcpclient to send and receive
 
-    // listening loop, deals with multiple connections.
-    while (true)
-    {
-        var client = await server.AcceptTcpClientAsync(); // blocking call to return a reference to the tcpclient to send and receive
-
-        await Task.Run(() => ProcessTCPConnection(client));
-    }
-}
-catch (Exception ex)
-{
-    Console.WriteLine($"Exception: {ex}");
-}
-finally
-{
-
-#pragma warning disable CS8602 // Dereference of a possibly null reference.
-    //server.Stop();
-#pragma warning restore CS8602
-
+    await Task.Run(() => ProcessTCPConnection(client));
 }
 
 static async Task ProcessTCPConnection(TcpClient client)
