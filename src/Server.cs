@@ -9,14 +9,12 @@ try
     server = new TcpListener(IPAddress.Any, 4221);
     server.Start(); //listen for client requests
 
-    byte[] bytes = new byte[1024];// Buffer for reading data
-
     // listening loop, deals with multiple connections.
     while (true)
     {
         var client = await server.AcceptTcpClientAsync(); // blocking call to return a reference to the tcpclient to send and receive
 
-        await Task.Run(() => ProcessTCPConnection(bytes, client));
+        await Task.Run(() => ProcessTCPConnection(client));
     }
 }
 catch (Exception ex)
@@ -27,13 +25,14 @@ finally
 {
 
 #pragma warning disable CS8602 // Dereference of a possibly null reference.
-    server.Stop();
+    //server.Stop();
 #pragma warning restore CS8602
 
 }
 
-static async Task ProcessTCPConnection(byte[] bytes, TcpClient client)
+static async Task ProcessTCPConnection(TcpClient client)
 {
+    byte[] bytes = new byte[1024];// Buffer for reading data
     string data;
     var networkStream = client.GetStream(); //get the network stream
 
@@ -81,4 +80,5 @@ static async Task ProcessTCPConnection(byte[] bytes, TcpClient client)
     await networkStream.WriteAsync(msg);// Write buffer into the network stream
 
     client.Close();// dispose tcp client and request tcp connection to close
+    Console.WriteLine("Reponse sent!");
 }
