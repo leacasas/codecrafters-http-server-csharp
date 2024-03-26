@@ -2,6 +2,8 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 
+namespace codecrafters_http_server.src;
+
 public class Program
 {
     public static async Task Main(string[] args)
@@ -121,49 +123,3 @@ public class Program
         client.Close();// dispose tcp client and request tcp connection to close
     }
 }
-
-/*
- using System;
-using System.IO;
-using System.Net;
-using System.Net.Sockets;
-using System.Text;
-using System.Threading.Tasks;
-
-class SimpleHttpServer
-{
-    public static void Main(string[] args)
-    {
-        int port = 8080; // Choose a port for your server
-        TcpListener listener = new TcpListener(IPAddress.Any, port);
-        listener.Start();
-        Console.WriteLine($"Server started. Listening on port {port}...");
-
-        while (true)
-        {
-            TcpClient client = listener.AcceptTcpClient();
-            Task.Run(() => HandleClient(client));
-        }
-    }
-
-    static async Task HandleClient(TcpClient client)
-    {
-        using (client)
-        using (NetworkStream stream = client.GetStream())
-        using (StreamReader reader = new StreamReader(stream))
-        using (StreamWriter writer = new StreamWriter(stream))
-        {
-            // Read the HTTP request
-            string request = await reader.ReadLineAsync();
-            Console.WriteLine($"Request received: {request}");
-
-            // Generate a simple HTTP response
-            string response = "HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\n\r\nHello, World!";
-            
-            // Send the HTTP response
-            await writer.WriteAsync(response);
-        }
-    }
-}
-
- */
