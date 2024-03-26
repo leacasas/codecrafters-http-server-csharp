@@ -63,7 +63,9 @@ public class Program
         else if (path.StartsWith("/files/"))
         {
             var filePathFromRequest = path.Remove(0, 7); // "/files/" is 7 chars
-            var filePath = Path.Join(Directory.GetCurrentDirectory(),filePathFromRequest);
+            var filePath = Path.Join(Directory.GetCurrentDirectory(), filePathFromRequest);
+
+            Console.WriteLine($"Checking : {filePath}");
 
             if (File.Exists(filePath))
             {
