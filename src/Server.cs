@@ -8,6 +8,11 @@ public class Program
     {
         TcpListener? server = null;
 
+        // processing directory for GET /files/
+        string? directoryPath = null;
+        if (args.Length > 0 && args[0] == "--directory")
+            directoryPath = args[1];
+
         server = new TcpListener(IPAddress.Any, 4221);
         server.Start(); //listen for client requests
 
@@ -16,11 +21,11 @@ public class Program
         {
             var client = await server.AcceptTcpClientAsync(); // blocking call to return a reference to the tcpclient to send and receive
 
-            _ = Task.Run(() => ProcessTCPConnection(client));
+            _ = Task.Run(() => ProcessTCPConnection(client, directoryPath));
         }
     }
 
-    private static async Task ProcessTCPConnection(TcpClient client)
+    private static async Task ProcessTCPConnection(TcpClient client, string? directoryPath)
     {
         byte[] bytes = new byte[1024];// Buffer for reading data
         string data;
@@ -63,7 +68,7 @@ public class Program
         else if (path.StartsWith("/files/"))
         {
             var filePathFromRequest = path.Remove(0, 7); // "/files/" is 7 chars
-            var filePath = Path.Join(Directory.GetCurrentDirectory(), filePathFromRequest);
+            var filePath = Path.Join(directoryPath, filePathFromRequest);
 
             Console.WriteLine($"Checking : {filePath}");
 
