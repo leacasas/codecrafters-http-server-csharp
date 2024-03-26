@@ -2,7 +2,7 @@
   "profiles": {
     "codecrafters-http-server": {
       "commandName": "Project",
-      "commandLineArgs": "--directory /tmp/data/codecrafters.io/http-server-tester/"
+      "commandLineArgs": "--directory /files/"
     }
   }
 }

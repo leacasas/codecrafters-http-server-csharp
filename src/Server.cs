@@ -40,6 +40,7 @@ public class Program
         var msgSegments = data.Split("\r\n", StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
         var startLine = msgSegments[0];
         var startLineSegments = startLine.Split(' ');
+        var method = startLineSegments[0];
         var path = startLineSegments[1];
 
         var responseBuilder = new StringBuilder("HTTP/1.1 ");
@@ -70,30 +71,41 @@ public class Program
             var filePathFromRequest = path.Remove(0, 7); // "/files/" is 7 chars
             var filePath = Path.Join(directoryPath, filePathFromRequest);
 
-            Console.WriteLine($"Checking : {filePath}");
-
-            if (File.Exists(filePath))
+            if (method == "GET")
             {
-                var fileContent = await File.ReadAllBytesAsync(filePath);
+                if (File.Exists(filePath))
+                {
+                    var fileContent = await File.ReadAllBytesAsync(filePath);
 
-                responseBuilder.Append("200 OK\r\n");
-                responseBuilder.Append("Content-Type: application/octet-stream\r\n");//Content type
-                responseBuilder.Append($"Content-Length: {fileContent.Length}\r\n");//Content length
-                responseBuilder.Append("\r\n");//new line
+                    responseBuilder.Append("200 OK\r\n");
+                    responseBuilder.Append("Content-Type: application/octet-stream\r\n");//Content type
+                    responseBuilder.Append($"Content-Length: {fileContent.Length}\r\n");//Content length
+                    responseBuilder.Append("\r\n");//new line
 
-                byte[] responseHead = Encoding.UTF8.GetBytes(responseBuilder.ToString());
+                    byte[] responseHead = Encoding.UTF8.GetBytes(responseBuilder.ToString());
 
-                await networkStream.WriteAsync(responseHead);
-                await networkStream.WriteAsync(fileContent);
+                    await networkStream.WriteAsync(responseHead);
+                    await networkStream.WriteAsync(fileContent);
 
-                networkStream.Close(); // close stream
-                client.Close();// dispose tcp client and request tcp connection to close
+                    networkStream.Close(); // close stream
+                    client.Close();// dispose tcp client and request tcp connection to close
 
-                return;
+                    return;
+                }
+                else
+                {
+                    responseBuilder.Append("404 Not Found\r\n\r\n");
+                }
             }
-            else
+            else if (method == "POST")
             {
-                responseBuilder.Append("404 Not Found\r\n\r\n");
+                var requestPayload = msgSegments.Last();
+                var fileContents = Encoding.UTF8.GetBytes(requestPayload);
+
+                await File.WriteAllBytesAsync(filePath, fileContents);
+
+                responseBuilder.Append("201 Created\r\n");
+                responseBuilder.Append("\r\n");
             }
         }
         else
