@@ -60,8 +60,39 @@ public class Program
             responseBuilder.Append("\r\n");//new line
             responseBuilder.Append($"{valueToEcho}");//content
         }
+        else if (path.StartsWith("/files/"))
+        {
+            var filePathFromRequest = path.Remove(0, 7); // "/files/" is 7 chars
+            var filePath = Path.Join(Directory.GetCurrentDirectory(),filePathFromRequest);
+
+            if (File.Exists(filePath))
+            {
+                var fileContent = await File.ReadAllBytesAsync(filePath);
+
+                responseBuilder.Append("200 OK\r\n");
+                responseBuilder.Append("Content-Type: application/octet-stream\r\n");//Content type
+                responseBuilder.Append($"Content-Length: {fileContent.Length}\r\n");//Content length
+                responseBuilder.Append("\r\n");//new line
+
+                byte[] responseHead = Encoding.UTF8.GetBytes(responseBuilder.ToString());
+
+                await networkStream.WriteAsync(responseHead);
+                await networkStream.WriteAsync(fileContent);
+
+                networkStream.Close(); // close stream
+                client.Close();// dispose tcp client and request tcp connection to close
+
+                return;
+            }
+            else
+            {
+                responseBuilder.Append("404 Not Found\r\n\r\n");
+            }
+        }
         else
+        {
             responseBuilder.Append("404 Not Found\r\n\r\n");
+        }
 
         byte[] msg = Encoding.UTF8.GetBytes(responseBuilder.ToString());
 
